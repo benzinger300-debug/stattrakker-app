@@ -320,6 +320,7 @@ server <- function(input, output, session) {
   new_player_rv    <- reactiveVal(NULL)   # list(name, pin) after coach adds player
   coach_sel_ath_rv <- reactiveVal(NULL)   # athlete ID selected in coach profile view
   coach_tab_rv     <- reactiveVal("roster") # active coach tab
+  athlete_tab_rv   <- reactiveVal("passport") # active athlete tab
   sched_month_rv   <- reactiveVal(format(Sys.Date(), "%Y-%m"))
 
   athlete  <- reactive(get_athlete(athlete_id() %||% ""))
@@ -1500,15 +1501,43 @@ server <- function(input, output, session) {
           actionButton("btn_logout", "Log out", class = "btn-ghost",
             style = "font-size:12px;padding:6px 14px;"))),
       div(class = "page-wrap",
-        tabsetPanel(id = "main_tabs",
-          tabPanel("Passport",  uiOutput("passport_tab")),
-          tabPanel("Games",     uiOutput("games_tab")),
-          tabPanel("Journal",   uiOutput("journal_tab")),
-          tabPanel("Settings",  uiOutput("settings_tab"))
-        )
+        uiOutput("athlete_nav_pills"),
+        uiOutput("athlete_tab_content")
       )
     )
   }
+
+  # Pill-style tabs for the athlete view (matches the coach dashboard look)
+  output$athlete_nav_pills <- renderUI({
+    active <- athlete_tab_rv()
+    pills  <- list(
+      list(id = "passport", icon = "🪪", label = "Passport"),
+      list(id = "games",    icon = "🏀", label = "Games"),
+      list(id = "journal",  icon = "📓", label = "Journal"),
+      list(id = "settings", icon = "⚙️", label = "Settings")
+    )
+    div(class = "pill-nav",
+      lapply(pills, function(p) {
+        tags$button(
+          class = paste0("pill", if (identical(active, p$id)) " active" else ""),
+          onclick = sprintf(
+            "Shiny.setInputValue('athlete_tab','%s',{priority:'event'})", p$id),
+          paste0(p$icon, "  ", p$label)
+        )
+      })
+    )
+  })
+
+  output$athlete_tab_content <- renderUI({
+    switch(athlete_tab_rv(),
+      "games"    = uiOutput("games_tab"),
+      "journal"  = uiOutput("journal_tab"),
+      "settings" = uiOutput("settings_tab"),
+      uiOutput("passport_tab")
+    )
+  })
+
+  observeEvent(input$athlete_tab, { athlete_tab_rv(input$athlete_tab) })
 
   observe({
     ath <- athlete(); req(ath)
