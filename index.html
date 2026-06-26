@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- ── SEO: primary ─────────────────────────────────────────────── -->
+<title>Stattrakker — The Athlete Passport | Track Your Stats &amp; Get Scouted</title>
+<meta name="description" content="Stattrakker is the athlete passport: log your games, build a verified stats profile, track wellness streaks, and get discovered by coaches and scouts. Free during beta — for every sport, every level." />
+<meta name="keywords" content="Stattrakker, athlete passport, sports stats tracker, get scouted, athlete profile, coach scouting app, recruiting, basketball stats, football stats" />
+<link rel="canonical" href="https://stattrakker.com/" />
+<meta name="robots" content="index, follow" />
+<meta name="theme-color" content="#0a0c10" />
+
+<!-- ── SEO: Open Graph (Facebook, iMessage, etc.) ───────────────── -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Stattrakker" />
+<meta property="og:title" content="Stattrakker — The Athlete Passport" />
+<meta property="og:description" content="Log your games, build a verified stats profile, and get discovered by coaches. Free during beta." />
+<meta property="og:url" content="https://stattrakker.com/" />
+<meta property="og:image" content="https://stattrakker.com/demo-poster.jpg" />
+<meta property="og:video" content="https://stattrakker.com/demo-720.mp4" />
+
+<!-- ── SEO: Twitter ─────────────────────────────────────────────── -->
+<meta name="twitter:card" content="player" />
+<meta name="twitter:title" content="Stattrakker — The Athlete Passport" />
+<meta name="twitter:description" content="Log your games, build a verified stats profile, and get discovered by coaches." />
+<meta name="twitter:image" content="https://stattrakker.com/demo-poster.jpg" />
+
+<!-- ── SEO: structured data (helps Google show a rich result) ───── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Stattrakker",
+  "alternateName": "Stattrakker — The Athlete Passport",
+  "applicationCategory": "SportsApplication",
+  "operatingSystem": "Web",
+  "url": "https://stattrakker.com/",
+  "description": "The athlete passport: log your games, build a verified stats profile, track wellness streaks, and get discovered by coaches and scouts.",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Stattrakker",
+  "url": "https://stattrakker.com/",
+  "logo": "https://stattrakker.com/demo-poster.jpg"
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#090b0f; --surface:#12161e; --surface-2:#161b25;
+    --border:#1d2330; --border-2:#272f3d;
+    --text:#eef1f6; --text-2:#9aa6bd; --text-3:#5e6a82;
+    --accent:#c8f04b; --accent-soft:rgba(200,240,75,.12);
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; font-family:'Barlow',sans-serif; }
+  html{ scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+  body{ background:radial-gradient(1100px 520px at 50% -8%, #11151d 0%, var(--bg) 55%); color:var(--text); letter-spacing:-0.01em; }
+  a{ text-decoration:none; color:inherit; }
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 1.5rem; }
+
+  /* nav */
+  header{ position:sticky; top:0; z-index:50; background:rgba(13,16,23,.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border); }
+  .nav{ display:flex; align-items:center; justify-content:space-between; height:64px; }
+  .brand{ font-weight:900; font-size:1.35rem; color:var(--accent); letter-spacing:-0.04em; }
+  .nav-cta{ display:flex; gap:.6rem; align-items:center; }
+  .btn{ display:inline-block; font-weight:800; font-size:.9rem; padding:10px 20px; border-radius:10px; cursor:pointer; transition:all .15s ease; border:1px solid transparent; }
+  .btn-primary{ background:var(--accent); color:#0a0c10; box-shadow:0 6px 18px rgba(200,240,75,.2); }
+  .btn-primary:hover{ filter:brightness(1.06); transform:translateY(-1px); }
+  .btn-ghost{ color:var(--text); border-color:var(--border-2); }
+  .btn-ghost:hover{ background:var(--surface-2); border-color:#3a455c; }
+
+  /* hero */
+  .hero{ text-align:center; padding:4.5rem 0 2.5rem; }
+  .eyebrow{ display:inline-block; font-size:.8rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--accent); background:var(--accent-soft); border:1px solid #2a4a10; padding:6px 14px; border-radius:999px; margin-bottom:1.4rem; }
+  h1{ font-size:clamp(2.2rem,6vw,3.8rem); font-weight:900; line-height:1.05; letter-spacing:-0.04em; }
+  h1 .hl{ color:var(--accent); }
+  .sub{ max-width:620px; margin:1.2rem auto 2rem; font-size:1.15rem; color:var(--text-2); line-height:1.55; }
+  .hero-cta{ display:flex; gap:.8rem; justify-content:center; flex-wrap:wrap; }
+  .btn-lg{ font-size:1rem; padding:14px 28px; }
+
+  /* video */
+  .video-wrap{ max-width:900px; margin:3rem auto 0; border-radius:18px; overflow:hidden; border:1px solid var(--border); box-shadow:0 30px 80px rgba(0,0,0,.55); background:#000; }
+  .video-wrap video{ display:block; width:100%; height:auto; }
+
+  /* features */
+  section.block{ padding:4.5rem 0; }
+  .section-head{ text-align:center; margin-bottom:2.5rem; }
+  .section-head h2{ font-size:clamp(1.8rem,4vw,2.6rem); font-weight:900; letter-spacing:-0.03em; }
+  .section-head p{ color:var(--text-2); margin-top:.6rem; font-size:1.05rem; }
+  .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; }
+  .card{ background:linear-gradient(180deg,var(--surface-2),var(--surface)); border:1px solid var(--border); border-radius:16px; padding:1.6rem; transition:transform .16s ease,border-color .16s ease; }
+  .card:hover{ transform:translateY(-3px); border-color:var(--border-2); }
+  .card .ico{ font-size:1.8rem; margin-bottom:.7rem; }
+  .card h3{ font-size:1.15rem; font-weight:800; margin-bottom:.4rem; }
+  .card p{ color:var(--text-2); font-size:.95rem; line-height:1.55; }
+
+  /* two-up */
+  .two{ display:grid; grid-template-columns:1fr 1fr; gap:1.1rem; }
+  .panel{ background:linear-gradient(180deg,var(--surface-2),var(--surface)); border:1px solid var(--border); border-radius:18px; padding:2rem; }
+  .panel h3{ font-size:1.4rem; font-weight:900; letter-spacing:-0.02em; margin-bottom:.6rem; }
+  .panel .tag{ font-size:.75rem; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:var(--accent); }
+  .panel ul{ list-style:none; margin-top:1rem; }
+  .panel li{ color:var(--text-2); padding:.45rem 0 .45rem 1.6rem; position:relative; line-height:1.5; }
+  .panel li::before{ content:"✓"; position:absolute; left:0; color:var(--accent); font-weight:900; }
+
+  /* cta band */
+  .band{ text-align:center; background:radial-gradient(600px 200px at 50% 0%, rgba(200,240,75,.1), transparent 70%), var(--surface); border:1px solid var(--border); border-radius:22px; padding:3.5rem 1.5rem; }
+  .band h2{ font-size:clamp(1.8rem,4vw,2.6rem); font-weight:900; letter-spacing:-0.03em; }
+  .band p{ color:var(--text-2); margin:.8rem auto 1.8rem; max-width:520px; }
+
+  footer{ border-top:1px solid var(--border); padding:2.5rem 0; margin-top:4rem; text-align:center; color:var(--text-3); font-size:.9rem; }
+  footer .brand{ font-size:1.1rem; margin-bottom:.5rem; }
+
+  @media (max-width:760px){
+    .grid{ grid-template-columns:1fr; }
+    .two{ grid-template-columns:1fr; }
+    .nav-cta .btn-ghost{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">Stattrakker</div>
+    <div class="nav-cta">
+      <a class="btn btn-primary" href="/own-it/">Launch App</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero wrap">
+    <span class="eyebrow">The Athlete Passport</span>
+    <h1>Every athlete has stats.<br>Now they have a <span class="hl">passport.</span></h1>
+    <p class="sub">Log your games, build a verified stats profile, keep your wellness streak, and get discovered by coaches and scouts — for every sport, every level.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary btn-lg" href="/own-it/">Create your passport — free</a>
+      <a class="btn btn-ghost btn-lg" href="#demo">Watch the demo</a>
+    </div>
+
+    <!-- VIDEO -->
+    <div class="video-wrap" id="demo">
+      <video controls preload="metadata" playsinline poster="demo-poster.jpg">
+        <source src="demo-720.mp4" type="video/mp4" />
+        Your browser doesn't support video playback.
+      </video>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="block wrap">
+    <div class="section-head">
+      <h2>Your whole game, in one profile</h2>
+      <p>Built for athletes who want to be seen — and coaches who want to find them.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ico">🪪</div><h3>Passport Score</h3><p>A single number that blends your performance, consistency, and wellness into a profile coaches can trust.</p></div>
+      <div class="card"><div class="ico">🏀</div><h3>Log Every Game</h3><p>Sport-specific stat tracking — points, goals, yards, kills, times — with results and a performance rating.</p></div>
+      <div class="card"><div class="ico">🔥</div><h3>Wellness Streaks</h3><p>Daily check-ins build an honest streak, so coaches see who shows up day after day.</p></div>
+      <div class="card"><div class="ico">🔍</div><h3>Get Scouted</h3><p>Coaches and leagues browse the athlete pool, see where you play, and add you to their team.</p></div>
+      <div class="card"><div class="ico">🏆</div><h3>Every Sport</h3><p>Basketball, football, soccer, baseball, volleyball, track, and more — each with the right positions and stats.</p></div>
+      <div class="card"><div class="ico">📋</div><h3>Coach Tools</h3><p>Rosters, lineups, schedules, reports, and leaderboards — everything a coach needs in one dashboard.</p></div>
+    </div>
+  </section>
+
+  <!-- TWO-UP -->
+  <section class="block wrap">
+    <div class="two">
+      <div class="panel">
+        <span class="tag">For Athletes</span>
+        <h3>Own your stats</h3>
+        <ul>
+          <li>Build a passport that's yours — it follows you, not a team</li>
+          <li>Log games and check-ins in seconds</li>
+          <li>Show coaches where you play and how to find you</li>
+          <li>Free during beta — no coach required to start</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <span class="tag">For Coaches &amp; Leagues</span>
+        <h3>Scout smarter</h3>
+        <ul>
+          <li>Browse the whole athlete pool by score, position, and level</li>
+          <li>Add players to your team — they keep their own passport</li>
+          <li>Track streaks, attention flags, and team leaderboards</li>
+          <li>Build lineups and schedules in one place</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BAND -->
+  <section class="block wrap">
+    <div class="band">
+      <h2>Start your passport today</h2>
+      <p>Free during beta. Name and a PIN is all it takes — your stats, your profile, your shot at getting seen.</p>
+      <a class="btn btn-primary btn-lg" href="/own-it/">Get started free</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="brand">Stattrakker</div>
+    <div>The Athlete Passport · © 2026 Stattrakker</div>
+  </div>
+</footer>
+
+</body>
+</html>
