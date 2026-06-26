@@ -17,7 +17,7 @@ echo "==> Fetching landing files into /var/www/stattrakker"
 mkdir -p /var/www/stattrakker
 cd /var/www/stattrakker || { echo "ABORT: cannot cd"; exit 1; }
 ok=1
-for f in index.html demo-720.mp4 demo-poster.jpg sitemap.xml robots.txt; do
+for f in index.html demo-720.mp4 demo-poster.jpg sitemap.xml robots.txt stattrakker-logo.svg; do
   if wget -q -O "$f" "$RAW/$f"; then echo "  got $f"; else echo "  FAILED $f"; ok=0; fi
 done
 if [ "$ok" != "1" ]; then echo "ABORT: could not fetch all landing files (no changes made)"; exit 1; fi
