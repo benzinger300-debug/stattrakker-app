@@ -125,6 +125,25 @@ find_by_name_pin <- function(name, pin) {
   }
   NULL
 }
+# Coach lookups (multi-coach): only match records that are coaches.
+find_coach <- function(name, pin) {
+  name <- tolower(trimws(name)); pin <- trimws(pin)
+  for (id in ls(athlete_store)) {
+    a <- get(id, envir = athlete_store)
+    if (identical(a$role, "coach") &&
+        tolower(trimws(a$name %||% "")) == name &&
+        trimws(a$pin %||% "") == pin) return(a)
+  }
+  NULL
+}
+coach_name_taken <- function(name) {
+  name <- tolower(trimws(name))
+  for (id in ls(athlete_store)) {
+    a <- get(id, envir = athlete_store)
+    if (identical(a$role, "coach") && tolower(trimws(a$name %||% "")) == name) return(TRUE)
+  }
+  FALSE
+}
 # Honest streak: number of consecutive calendar days with a check-in, ending
 # today or yesterday. Entries without an ISO date (older data) are ignored.
 compute_streak <- function(journals) {
@@ -382,6 +401,8 @@ server <- function(input, output, session) {
   athlete_tab_rv   <- reactiveVal("passport") # active athlete tab
   sched_month_rv   <- reactiveVal(format(Sys.Date(), "%Y-%m"))
   team_ver         <- reactiveVal(0)         # bump to refresh team/browse views
+  coach_id         <- reactiveVal(NULL)      # id of the logged-in coach (multi-coach)
+  cur_coach <- function() { id <- coach_id() %||% ""; if (nzchar(id)) get_athlete(id) else NULL }
 
   athlete  <- reactive(get_athlete(athlete_id() %||% ""))
   passport <- reactive(calc_passport(games_rv(), journals_rv(), streak_rv()))
@@ -583,91 +604,126 @@ server <- function(input, output, session) {
   coach_reset_rv <- reactiveVal(FALSE)
 
   coach_login_screen <- function() {
-    coach    <- get_coach()
-    is_new   <- is.null(coach) || !nzchar(coach$pin %||% "")
-    resetting <- isolate(coach_reset_rv())
-    show_create <- is_new || resetting
     div(class = "login-wrap",
       div(class = "login-card",
-        div(style = "text-align:center;margin-bottom:2rem;",
+        div(style = "text-align:center;margin-bottom:1.75rem;",
           div(class = "login-logo", "Stattrakker"),
           div(class = "login-sub", "Coach Access")),
-        uiOutput("coach_login_msg"),
-        div(style = "margin-bottom:1.5rem;",
-          tags$label(class = "control-label",
-            if (show_create) "Create your Coach PIN" else "Coach PIN"),
-          if (show_create) div(style="font-size:12px;color:#6b7a99;margin-bottom:.5rem;",
-            "Choose any 4-digit PIN — you'll use this every time you log in."),
-          passwordInput("coach_pin_inp", NULL,
-            placeholder = if (show_create) "Choose a 4-digit PIN" else "Enter your PIN")),
-        actionButton("btn_coach_login",
-          if (show_create) "Set PIN & Enter" else "Enter Dashboard",
-          class = "btn-own",
-          style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
-        div(style = "text-align:center; margin-bottom:.75rem;",
-          if (!show_create)
-            actionLink("btn_reset_pin", "Forgot PIN? Reset it",
-              style = "color:#5a6478;font-size:12px;font-weight:700;text-decoration:none;")),
+
+        # ── Tab switcher ──
+        div(style = "display:flex;border:1px solid #1e2330;border-radius:12px;overflow:hidden;margin-bottom:1.75rem;",
+          tags$button(id = "ctab_login_btn",
+            style = "flex:1;padding:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;border-radius:0;background:#C8F04B;color:#0a0c10;",
+            onclick = "document.getElementById('ctab_login').style.display='block';
+                       document.getElementById('ctab_signup').style.display='none';
+                       this.style.background='#C8F04B';this.style.color='#0a0c10';
+                       document.getElementById('ctab_signup_btn').style.background='transparent';
+                       document.getElementById('ctab_signup_btn').style.color='#6b7a99';",
+            "Log In"),
+          tags$button(id = "ctab_signup_btn",
+            style = "flex:1;padding:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;border-radius:0;background:transparent;color:#6b7a99;",
+            onclick = "document.getElementById('ctab_signup').style.display='block';
+                       document.getElementById('ctab_login').style.display='none';
+                       this.style.background='#C8F04B';this.style.color='#0a0c10';
+                       document.getElementById('ctab_login_btn').style.background='transparent';
+                       document.getElementById('ctab_login_btn').style.color='#6b7a99';",
+            "Sign Up")
+        ),
+
+        # ── LOG IN ──
+        div(id = "ctab_login",
+          uiOutput("coach_login_msg"),
+          div(style = "margin-bottom:1rem;",
+            tags$label(class = "control-label", "Coach Name"),
+            textInput("clog_name", NULL, placeholder = "Your name")),
+          div(style = "margin-bottom:1.5rem;",
+            tags$label(class = "control-label", "PIN"),
+            passwordInput("clog_pin", NULL, placeholder = "Your 4-digit PIN")),
+          actionButton("btn_coach_login", "Enter Dashboard", class = "btn-own",
+            style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
+          div(style="font-size:11px;color:#4a5268;text-align:center;",
+            "New here? Tap Sign Up above to create your coach account.")
+        ),
+
+        # ── SIGN UP ──
+        div(id = "ctab_signup", style = "display:none;",
+          uiOutput("coach_signup_msg"),
+          div(style = "margin-bottom:.85rem;",
+            tags$label(class = "control-label", "Your Name"),
+            textInput("csu_name", NULL, placeholder = "e.g. Coach Carter")),
+          div(style = "margin-bottom:.85rem;",
+            tags$label(class = "control-label", "Team / Organization"),
+            textInput("csu_team", NULL, placeholder = "e.g. Lincoln High Varsity")),
+          div(style = "margin-bottom:1.5rem;",
+            tags$label(class = "control-label", "Choose a PIN (4 digits)"),
+            passwordInput("csu_pin", NULL, placeholder = "4-digit PIN you'll log in with")),
+          actionButton("btn_coach_signup", "Create Coach Account", class = "btn-own",
+            style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
+          div(style="font-size:11px;color:#4a5268;text-align:center;",
+            "Free during beta. Once you're in, add your athletes — each gets their own passport.")
+        ),
+
+        tags$hr(style="border:none;border-top:1px solid #1e2330;margin:1.25rem 0;"),
         div(style = "text-align:center;",
           actionLink("go_athlete_login", "← Athlete login",
             style = "color:#5a6478;font-size:12px;font-weight:700;text-decoration:none;"))))
   }
 
-  observeEvent(input$go_athlete_login, { coach_reset_rv(FALSE); page("login") })
+  observeEvent(input$go_athlete_login, { page("login") })
 
-  observeEvent(input$btn_reset_pin, {
-    coach <- get_coach()
-    if (!is.null(coach)) {
-      coach$pin <- ""
-      save_athlete(coach)
+  # ── COACH LOG IN (name + PIN) ──────────────────────────────────────────────
+  observeEvent(input$btn_coach_login, {
+    name <- trimws(input$clog_name %||% "")
+    pin  <- trimws(input$clog_pin  %||% "")
+    if (!nzchar(name)) {
+      output$coach_login_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;","Enter your name.")); return()
     }
-    coach_reset_rv(TRUE)
-    page("coach_login")
+    if (!nzchar(pin)) {
+      output$coach_login_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;","Enter your PIN.")); return()
+    }
+    key <- paste0("coach:", tolower(name))
+    locked <- login_locked_secs(key)
+    if (locked > 0) {
+      output$coach_login_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;", lock_msg(locked))); return()
+    }
+    c <- find_coach(name, pin)
+    if (is.null(c)) {
+      left    <- login_note_fail(key)
+      nowlock <- login_locked_secs(key)
+      msg <- if (nowlock > 0) lock_msg(nowlock)
+             else paste0("No coach account with that name and PIN. ",
+                         left, " attempt", if (left == 1) "" else "s", " left before a temporary lockout.")
+      output$coach_login_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;", msg)); return()
+    }
+    login_clear(key)
+    coach_id(c$id)
+    new_player_rv(NULL)
+    output$coach_login_msg <- renderUI(NULL)
+    page("coach")
   })
 
-  observeEvent(input$btn_coach_login, {
-    pin   <- trimws(input$coach_pin_inp %||% "")
-    coach <- get_coach()
+  # ── COACH SIGN UP (name + team + PIN) ──────────────────────────────────────
+  observeEvent(input$btn_coach_signup, {
+    name <- trimws(input$csu_name %||% "")
+    team <- trimws(input$csu_team %||% "")
+    pin  <- trimws(input$csu_pin  %||% "")
+    if (!nzchar(name)) {
+      output$coach_signup_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;","Enter your name.")); return()
+    }
     if (!grepl("^[0-9]{4}$", pin)) {
-      output$coach_login_msg <- renderUI(div(class="alert-danger",
-        style="margin-bottom:1rem;", "PIN must be exactly 4 digits."))
-      return()
+      output$coach_signup_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;","PIN must be exactly 4 digits.")); return()
     }
-    is_new <- is.null(coach) || !nzchar(coach$pin %||% "")
-    if (is_new) {
-      if (is.null(coach)) {
-        save_athlete(list(id=new_id(), name="Coach", pin=pin, role="coach",
-                          lineups=list(), schedule=list()))
-      } else {
-        coach$pin <- pin
-        save_athlete(coach)
-      }
-      login_clear("coach")
-      coach_reset_rv(FALSE)
-      new_player_rv(NULL)
-      page("coach")
-    } else {
-      locked <- login_locked_secs("coach")
-      if (locked > 0) {
-        output$coach_login_msg <- renderUI(div(class="alert-danger",
-          style="margin-bottom:1rem;", lock_msg(locked)))
-        return()
-      }
-      if (coach$pin != pin) {
-        left    <- login_note_fail("coach")
-        nowlock <- login_locked_secs("coach")
-        msg  <- if (nowlock > 0) lock_msg(nowlock)
-                else paste0("Wrong PIN. ", left, " attempt", if (left == 1) "" else "s",
-                            " left before a temporary lockout.")
-        output$coach_login_msg <- renderUI(div(class="alert-danger",
-          style="margin-bottom:1rem;", msg))
-        return()
-      }
-      login_clear("coach")
-      coach_reset_rv(FALSE)
-      new_player_rv(NULL)
-      page("coach")
+    if (!is.null(find_coach(name, pin))) {
+      output$coach_signup_msg <- renderUI(div(class="alert-danger",style="margin-bottom:1rem;",
+        "A coach with that name and PIN already exists — log in instead, or pick a different PIN.")); return()
     }
+    c <- list(id = new_id(), name = name, pin = pin, role = "coach",
+              team_name = team, team = character(0), lineups = list(), schedule = list())
+    save_athlete(c)
+    coach_id(c$id)
+    new_player_rv(NULL)
+    output$coach_signup_msg <- renderUI(NULL)
+    page("coach")
   })
 
   # ── COACH SCREEN ─────────────────────────────────────────────────────────
@@ -740,6 +796,7 @@ server <- function(input, output, session) {
     new_player_rv(NULL)
     coach_sel_ath_rv(NULL)
     coach_tab_rv("roster")
+    coach_id(NULL)
     page("login")
   })
 
@@ -892,7 +949,7 @@ server <- function(input, output, session) {
     } else {
     # ── MY TEAM LIST VIEW ────────────────────────────────────────────────────
       team_ver()                       # refresh when team membership changes
-      athletes <- get_team_athletes(get_coach())
+      athletes <- get_team_athletes(cur_coach())
       n        <- length(athletes)
       # Fixed: use vapply to guarantee numeric vector, not list
       scores   <- if (n > 0) vapply(athletes, function(a)
@@ -990,7 +1047,7 @@ server <- function(input, output, session) {
   # ── BROWSE ATHLETES (scouting pool) ──────────────────────────────────────
   output$coach_browse_ui <- renderUI({
     team_ver()
-    coach    <- get_coach()
+    coach    <- cur_coach()
     team_ids <- coach_team_ids(coach)
     athletes <- get_all_athletes()
     n        <- length(athletes)
@@ -1056,7 +1113,7 @@ server <- function(input, output, session) {
 
   # Add / remove athletes from the logged-in coach's team
   observeEvent(input$team_add, {
-    coach <- get_coach(); if (is.null(coach)) return()
+    coach <- cur_coach(); if (is.null(coach)) return()
     id <- trimws(input$team_add %||% "")
     if (!nzchar(id) || is.null(get_athlete(id))) return()
     ids <- coach_team_ids(coach)
@@ -1064,7 +1121,7 @@ server <- function(input, output, session) {
     team_ver(team_ver() + 1)
   })
   observeEvent(input$team_remove, {
-    coach <- get_coach(); if (is.null(coach)) return()
+    coach <- cur_coach(); if (is.null(coach)) return()
     id <- trimws(input$team_remove %||% "")
     ids <- coach_team_ids(coach)
     coach$team <- ids[ids != id]
@@ -1105,7 +1162,7 @@ server <- function(input, output, session) {
     )
     save_athlete(ath)
     # A coach-created player joins that coach's team automatically.
-    coach <- get_coach()
+    coach <- cur_coach()
     if (!is.null(coach)) {
       ids <- coach_team_ids(coach)
       coach$team <- c(ids, ath$id)
@@ -1128,7 +1185,7 @@ server <- function(input, output, session) {
   # ── ATHLETES TAB (add players + PIN management) ───────────────────────────
   output$coach_athletes_ui <- renderUI({
     team_ver()
-    athletes <- get_team_athletes(get_coach())
+    athletes <- get_team_athletes(cur_coach())
     n        <- length(athletes)
     np       <- new_player_rv()
 
@@ -1221,7 +1278,7 @@ server <- function(input, output, session) {
 
   # ── COACH LINEUPS TAB ─────────────────────────────────────────────────────
   output$coach_lineups_ui <- renderUI({
-    coach   <- get_coach()
+    coach   <- cur_coach()
     lineups <- if (!is.null(coach)) coach$lineups %||% list() else list()
 
     div(style = "padding-top:1.5rem;",
@@ -1319,7 +1376,7 @@ server <- function(input, output, session) {
       list(position  = positions[[i]],
            player_id = input[[paste0("lineup_slot_", i)]] %||% "")
     })
-    coach <- get_coach()
+    coach <- cur_coach()
     if (is.null(coach)) return()
     lineups        <- coach$lineups %||% list()
     lineups[[lname]] <- list(name = lname, sport = sport, slots = slots)
@@ -1332,7 +1389,7 @@ server <- function(input, output, session) {
 
   # ── COACH SCHEDULE TAB ────────────────────────────────────────────────────
   output$coach_schedule_ui <- renderUI({
-    coach    <- get_coach()
+    coach    <- cur_coach()
     schedule <- if (!is.null(coach)) coach$schedule %||% list() else list()
 
     cur_month <- sched_month_rv()
@@ -1485,7 +1542,7 @@ server <- function(input, output, session) {
       location  = trimws(input$sched_location %||% ""),
       notes     = trimws(input$sched_notes    %||% "")
     )
-    coach <- get_coach()
+    coach <- cur_coach()
     if (is.null(coach)) return()
     coach$schedule <- c(coach$schedule %||% list(), list(game))
     save_athlete(coach)
