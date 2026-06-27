@@ -1941,7 +1941,17 @@ server <- function(input, output, session) {
         column(4, div(class="stat-card",
           div(class="stat-label","Streak"),
           div(class="stat-value", paste0(streak_rv(), " 🔥")),
-          div(class="stat-sub","Days checked in"))))
+          div(class="stat-sub","Days checked in")))),
+      if (is.null(g) || !is.data.frame(g) || nrow(g)==0)
+        div(class = "card", style = "padding:1.75rem 1.5rem;margin-top:1.5rem;text-align:center;",
+          div(style="font-size:32px;margin-bottom:.4rem;","🏀"),
+          div(style="font-size:16px;font-weight:800;color:#f0f2f5;margin-bottom:.35rem;",
+            "Your passport is ready — let's fill it in"),
+          div(style="font-size:13px;color:#9ba8c0;line-height:1.55;max-width:430px;margin:0 auto 1.2rem;",
+            "Log your first game to start building your Passport Score, and check in daily to grow your streak."),
+          tags$button(class="btn-own", style="font-size:14px;padding:11px 22px;",
+            onclick="Shiny.setInputValue('athlete_tab','games',{priority:'event'})",
+            "Log your first game →"))
     )
   })
 

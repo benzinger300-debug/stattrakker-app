@@ -41,7 +41,7 @@
   "operatingSystem": "Web",
   "url": "https://stattrakker.com/",
   "description": "The athlete passport: log your games, build a verified stats profile, track wellness streaks, and get discovered by coaches and scouts.",
-  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+  "offers": { "@type": "Offer", "price": "10.00", "priceCurrency": "USD" }
 }
 </script>
 <script type="application/ld+json">
@@ -121,8 +121,22 @@
   .band h2{ font-size:clamp(1.8rem,4vw,2.6rem); font-weight:900; letter-spacing:-0.03em; }
   .band p{ color:var(--text-2); margin:.8rem auto 1.8rem; max-width:520px; }
 
+  /* faq */
+  .faq{ max-width:760px; margin:0 auto; }
+  .faq details{ background:linear-gradient(180deg,var(--surface-2),var(--surface)); border:1px solid var(--border); border-radius:14px; padding:1.1rem 1.3rem; margin-bottom:.8rem; }
+  .faq details[open]{ border-color:var(--border-2); }
+  .faq summary{ cursor:pointer; font-weight:800; font-size:1.05rem; list-style:none; display:flex; justify-content:space-between; align-items:center; gap:1rem; }
+  .faq summary::-webkit-details-marker{ display:none; }
+  .faq summary::after{ content:"+"; color:var(--accent); font-weight:900; font-size:1.4rem; line-height:1; }
+  .faq details[open] summary::after{ content:"–"; }
+  .faq details[open] summary{ margin-bottom:.75rem; }
+  .faq details p{ color:var(--text-2); line-height:1.6; font-size:.97rem; }
+
   footer{ border-top:1px solid var(--border); padding:2.5rem 0; margin-top:4rem; text-align:center; color:var(--text-3); font-size:.9rem; }
   footer .brand{ font-size:1.1rem; margin-bottom:.5rem; }
+  footer .footer-links{ display:flex; gap:1.5rem; justify-content:center; margin:.5rem 0 .2rem; flex-wrap:wrap; }
+  footer .footer-links a{ color:var(--text-2); font-weight:700; }
+  footer .footer-links a:hover{ color:var(--accent); }
 
   @media (max-width:760px){
     .grid{ grid-template-columns:1fr; }
@@ -254,6 +268,39 @@
     </div>
   </section>
 
+  <!-- FAQ -->
+  <section class="block wrap" id="faq">
+    <div class="section-head">
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>What is Stattrakker?</summary>
+        <p>Stattrakker is your digital athlete passport. You log your games and stats, build a profile that shows your performance and consistency, and become discoverable by coaches and scouts — for every sport, at every level.</p>
+      </details>
+      <details>
+        <summary>How much does it cost?</summary>
+        <p>Athletes are $10/month. Coaches are $10/month plus $10 for each athlete they add to their team. Every plan starts with a 7-day free trial, so you can try it before you're charged.</p>
+      </details>
+      <details>
+        <summary>Can I cancel anytime?</summary>
+        <p>Yes. There's a "Manage / Cancel subscription" button right in your account — cancel in one click and you won't be charged again. No emails, no hoops.</p>
+      </details>
+      <details>
+        <summary>Do I need a coach to join?</summary>
+        <p>No. Your passport is yours. You can sign up on your own and start logging right away — a coach can also add you to their team, but it's never required.</p>
+      </details>
+      <details>
+        <summary>How does getting scouted work?</summary>
+        <p>Coaches and leagues browse the athlete pool, see your stats and where you play, and can add you to their team. Stattrakker gives you the profile and the visibility — keeping it active and up to date is up to you.</p>
+      </details>
+      <details>
+        <summary>Is my information safe?</summary>
+        <p>Your stats live in your private passport. Payments are handled securely through PayPal — we never see or store your card details.</p>
+      </details>
+    </div>
+  </section>
+
   <!-- CTA BAND -->
   <section class="block wrap">
     <div class="band">
@@ -267,9 +314,28 @@
 <footer>
   <div class="wrap">
     <div class="brand">Stattrakker</div>
+    <div class="footer-links">
+      <a href="/privacy.html">Privacy</a>
+      <a href="/terms.html">Terms</a>
+      <a href="#faq">FAQ</a>
+      <a href="mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20Help">Contact</a>
+    </div>
     <div>The Athlete Passport · © 2026 Stattrakker</div>
   </div>
 </footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "What is Stattrakker?", "acceptedAnswer": { "@type": "Answer", "text": "Stattrakker is your digital athlete passport. You log your games and stats, build a profile, and become discoverable by coaches and scouts — for every sport, at every level." } },
+    { "@type": "Question", "name": "How much does it cost?", "acceptedAnswer": { "@type": "Answer", "text": "Athletes are $10/month. Coaches are $10/month plus $10 for each athlete they add. Every plan starts with a 7-day free trial." } },
+    { "@type": "Question", "name": "Can I cancel anytime?", "acceptedAnswer": { "@type": "Answer", "text": "Yes. There is a Manage / Cancel subscription button in your account — cancel in one click and you won't be charged again." } },
+    { "@type": "Question", "name": "Do I need a coach to join?", "acceptedAnswer": { "@type": "Answer", "text": "No. Your passport is yours. You can sign up on your own and start logging right away." } }
+  ]
+}
+</script>
 
 </body>
 </html>
