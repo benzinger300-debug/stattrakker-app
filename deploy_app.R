@@ -482,7 +482,7 @@ server <- function(input, output, session) {
             "For athletes who own their own passport.",
             list("Your Athlete Passport score", "Log games, stats & check-ins", "Build streaks and track progress", "Be discoverable by coaches & scouts"),
             "Subscribe with PayPal", pp_individual, accent = "#C8F04B"),
-          plan_card("Most flexible", "Coach / Team", "$10", "+ $10 per athlete",
+          plan_card(NULL, "Coach / Team", "$10", "+ $10 per athlete",
             "For coaches running a team or league.",
             list("Everything in Individual", "Unlimited roster + PIN logins", "Lineup builder & season schedule", "Team dashboard & attention alerts"),
             "Subscribe with PayPal", pp_coach, accent = "#ffc439", highlight = TRUE),
