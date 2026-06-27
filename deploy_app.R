@@ -383,7 +383,16 @@ hr.own { border:none; border-top:1px solid #1d2330; margin:1.5rem 0; }
 
 # ── UI ────────────────────────────────────────────────────────────────────────
 ui <- tagList(
-  tags$head(tags$style(HTML(css))),
+  tags$head(
+    tags$style(HTML(css)),
+    tags$style(HTML(".plan-card{transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;} .plan-card:hover{border-color:#C8F04B !important; box-shadow:0 16px 44px rgba(200,240,75,.22) !important; transform:translateY(-3px);}")),
+    # Front-door guard: a bare visit to the app is sent to the marketing site
+    # first. Only links carrying ?start=1 (website buttons) or ?paid=1 (PayPal
+    # return) stay here.
+    tags$script(HTML(
+      "(function(){var s=window.location.search||'';if(s.indexOf('start')===-1&&s.indexOf('paid')===-1){window.location.replace('https://stattrakker.com/');}})();"
+    ))
+  ),
   uiOutput("main_ui")
 )
 
@@ -407,6 +416,13 @@ server <- function(input, output, session) {
   athlete  <- reactive(get_athlete(athlete_id() %||% ""))
   passport <- reactive(calc_passport(games_rv(), journals_rv(), streak_rv()))
 
+  # If the visitor comes back from PayPal (?paid=1), send them straight to
+  # create their account / log in instead of the plans screen.
+  observeEvent(session$clientData$url_search, {
+    q <- shiny::parseQueryString(session$clientData$url_search %||% "")
+    if (!is.null(q$paid)) page("login")
+  }, once = TRUE)
+
   # ── ROUTER ────────────────────────────────────────────────────────────────
   output$main_ui <- renderUI({
     p <- page()
@@ -428,7 +444,7 @@ server <- function(input, output, session) {
 
   payment_screen <- function() {
     plan_card <- function(badge, title, price, sub, blurb, features, btn_label, btn_href, accent = "#C8F04B", highlight = FALSE) {
-      div(class = "card",
+      div(class = "card plan-card",
         style = paste0("padding:1.5rem;display:flex;flex-direction:column;",
           if (highlight) paste0("border:1.5px solid ", accent, "55;box-shadow:0 16px 44px rgba(200,240,75,.14);") else ""),
         if (!is.null(badge))
