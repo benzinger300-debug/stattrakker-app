@@ -102,6 +102,17 @@ save_athlete <- function(ath) {
   unlink(tmp)
   invisible(TRUE)
 }
+# Re-read the data file from disk into the in-memory store. Lets changes made by
+# the separate admin app (e.g. a PIN reset) take effect on the next login.
+reload_store <- function() {
+  if (!file.exists(data_file)) return(invisible())
+  s <- tryCatch(.load_store(data_file), error = function(e) NULL)
+  if (is.environment(s)) {
+    rm(list = ls(athlete_store), envir = athlete_store)
+    for (nm in ls(s)) assign(nm, get(nm, envir = s), envir = athlete_store)
+  }
+  invisible()
+}
 get_athlete <- function(id) {
   id <- trimws(id %||% "")
   if (!nzchar(id) || !exists(id, envir = athlete_store)) return(NULL)
@@ -384,8 +395,10 @@ hr.own { border:none; border-top:1px solid #1d2330; margin:1.5rem 0; }
 # ── UI ────────────────────────────────────────────────────────────────────────
 ui <- tagList(
   tags$head(
+    tags$meta(name = "viewport", content = "width=device-width, initial-scale=1, maximum-scale=5"),
     tags$style(HTML(css)),
     tags$style(HTML(".plan-card{transition:border-color .15s ease, box-shadow .15s ease, transform .15s ease;} .plan-card:hover{border-color:#C8F04B !important; box-shadow:0 16px 44px rgba(200,240,75,.22) !important; transform:translateY(-3px);}")),
+    tags$style(HTML("@media (max-width:600px){ .login-wrap{padding:1rem;} .login-card{padding:1.75rem 1.25rem;border-radius:18px;} .login-logo{font-size:2.6rem;} .page-wrap{padding:1.25rem .9rem;} .navbar-brand{font-size:1.2rem !important;} .passport-hero{padding:1.25rem;} .passport-score{font-size:54px;} .coach-title{font-size:22px;} .coach-header{padding:1rem 0 .25rem;} .stat-card{padding:1rem 1.1rem;} }")),
     # Front-door guard: a bare visit to the app is sent to the marketing site
     # first. Only links carrying ?start=1 (website buttons) or ?paid=1 (PayPal
     # return) stay here.
@@ -603,6 +616,7 @@ server <- function(input, output, session) {
 
   # ── LOG IN handler ────────────────────────────────────────────────────────
   observeEvent(input$btn_login, {
+    reload_store()
     name <- trimws(input$inp_name %||% "")
     pin  <- trimws(input$inp_pin  %||% "")
     if (!nzchar(name)) {
@@ -770,6 +784,7 @@ server <- function(input, output, session) {
 
   # ── COACH LOG IN (name + PIN) ──────────────────────────────────────────────
   observeEvent(input$btn_coach_login, {
+    reload_store()
     name <- trimws(input$clog_name %||% "")
     pin  <- trimws(input$clog_pin  %||% "")
     if (!nzchar(name)) {
