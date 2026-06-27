@@ -440,7 +440,7 @@ server <- function(input, output, session) {
   # They look like: https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-XXXXXXXX
   pp_individual <- "https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5L9725178V660432VNJAAP7A"
   pp_coach      <- "https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0NN66399YA646750ANJAAXKI"
-  pp_school     <- "mailto:benzinger300@gmail.com?subject=Stattrakker%20for%20our%20school"
+  pp_school     <- "mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20for%20our%20school"
 
   payment_screen <- function() {
     plan_card <- function(badge, title, price, sub, blurb, features, btn_label, btn_href, accent = "#C8F04B", highlight = FALSE) {
