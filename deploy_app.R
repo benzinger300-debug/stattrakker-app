@@ -546,7 +546,11 @@ server <- function(input, output, session) {
           actionButton("btn_login", "Enter", class = "btn-own",
             style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
           div(style="font-size:11px;color:#4a5268;text-align:center;",
-            "PIN given by your coach, or the one you created when you signed up.")
+            "PIN given by your coach, or the one you created when you signed up."),
+          div(style="text-align:center;margin-top:.5rem;",
+            tags$a(href="mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20-%20Forgot%20my%20PIN&body=My%20name%20on%20Stattrakker%20is%3A%20",
+              style="font-size:11px;color:#6b7a99;font-weight:700;text-decoration:none;",
+              "Forgot your PIN?"))
         ),
 
         # ── SIGN UP tab ──
@@ -731,7 +735,11 @@ server <- function(input, output, session) {
           actionButton("btn_coach_login", "Enter Dashboard", class = "btn-own",
             style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
           div(style="font-size:11px;color:#4a5268;text-align:center;",
-            "New here? Tap Sign Up above to create your coach account.")
+            "New here? Tap Sign Up above to create your coach account."),
+          div(style="text-align:center;margin-top:.5rem;",
+            tags$a(href="mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20-%20Coach%20forgot%20PIN&body=My%20coach%20name%20and%20team%20on%20Stattrakker%3A%20",
+              style="font-size:11px;color:#6b7a99;font-weight:700;text-decoration:none;",
+              "Forgot your PIN?"))
         ),
 
         # ── SIGN UP ──
