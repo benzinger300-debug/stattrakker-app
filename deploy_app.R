@@ -1824,7 +1824,18 @@ server <- function(input, output, session) {
               row[[2]])
           })
         )
-      )
+      ),
+
+      # ── Manage / Cancel subscription ──
+      div(class = "card", style = "padding:1.25rem;margin-top:1.5rem;",
+        div(style = "font-size:15px;font-weight:800;color:#f0f2f5;margin-bottom:.5rem;", "Billing"),
+        div(style = "font-size:13px;color:#9ba8c0;line-height:1.55;margin-bottom:1rem;",
+          "Your coach subscription is billed monthly through PayPal. Cancel anytime — you won't be charged again after you cancel."),
+        tags$a(href = "https://www.paypal.com/myaccount/autopay/", target = "_blank", rel = "noopener",
+          class = "btn-own", style = "display:inline-block;text-decoration:none;",
+          "Manage / Cancel subscription"),
+        div(style = "font-size:11px;color:#5a6478;margin-top:.65rem;",
+          "Opens PayPal, where you can manage or cancel your Stattrakker subscription."))
     )
   })
 
@@ -2061,7 +2072,16 @@ server <- function(input, output, session) {
         div(style="font-size:11px;color:#5a6478;margin:-.35rem 0 1rem;",
           "Shown to coaches and scouts so they can find you and come watch you play."),
         actionButton("btn_save_settings","Save",class="btn-own"),
-        uiOutput("settings_msg")))
+        uiOutput("settings_msg")),
+      div(class="card",style="padding:1.25rem;max-width:500px;margin-top:1.25rem;",
+        div(style="font-size:16px;font-weight:800;color:#f0f2f5;margin-bottom:.5rem;","Billing"),
+        div(style="font-size:13px;color:#9ba8c0;line-height:1.55;margin-bottom:1rem;",
+          "Your subscription is billed monthly through PayPal. Cancel anytime — you won't be charged again after you cancel."),
+        tags$a(href="https://www.paypal.com/myaccount/autopay/", target="_blank", rel="noopener",
+          class="btn-own", style="display:inline-block;text-decoration:none;",
+          "Manage / Cancel subscription"),
+        div(style="font-size:11px;color:#5a6478;margin-top:.65rem;",
+          "Opens PayPal, where you can manage or cancel your Stattrakker subscription.")))
   })
 
   # ── Position dropdown (settings) — updates with sport ────────────────────
