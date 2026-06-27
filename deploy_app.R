@@ -496,7 +496,10 @@ server <- function(input, output, session) {
           actionLink("go_login_from_pay", "Already subscribed or have an account?  Continue →",
             style = "color:#9ba8c0;font-size:14px;font-weight:700;text-decoration:none;")),
         div(style = "text-align:center;margin-top:.6rem;font-size:12px;color:#4a5268;",
-          "Cancel anytime · Secure checkout through PayPal")
+          "Cancel anytime · Secure checkout through PayPal"),
+        div(style = "text-align:center;margin-top:.4rem;font-size:12px;",
+          tags$a(href = "mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20Help",
+            style = "color:#9ba8c0;font-weight:700;text-decoration:none;", "Need help?  Contact us →"))
       )
     )
   }
@@ -821,8 +824,11 @@ server <- function(input, output, session) {
           div(style = "display:flex;align-items:center;gap:.75rem;",
             div(class = "navbar-brand", "Stattrakker"),
             tags$span(class = "coach-badge", "COACH")),
-          actionButton("btn_coach_logout", "Log out", class = "btn-ghost",
-            style = "font-size:12px;padding:6px 14px;"))),
+          div(style = "display:flex;align-items:center;gap:.5rem;",
+            tags$a(href = "mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20Help",
+              class = "btn-ghost", style = "font-size:12px;padding:6px 14px;text-decoration:none;", "Help"),
+            actionButton("btn_coach_logout", "Log out", class = "btn-ghost",
+              style = "font-size:12px;padding:6px 14px;")))),
       div(class = "page-wrap",
         # ── Dashboard header ──
         div(class = "coach-header",
@@ -1848,8 +1854,11 @@ server <- function(input, output, session) {
           style = "display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;padding-bottom:.75rem;",
           div(class = "navbar-brand", "Stattrakker"),
           div(style = "font-size:13px;font-weight:700;color:#9ba8c0;", ath$name),
-          actionButton("btn_logout", "Log out", class = "btn-ghost",
-            style = "font-size:12px;padding:6px 14px;"))),
+          div(style = "display:flex;align-items:center;gap:.5rem;",
+            tags$a(href = "mailto:Stattrakker.help@outlook.com?subject=Stattrakker%20Help",
+              class = "btn-ghost", style = "font-size:12px;padding:6px 14px;text-decoration:none;", "Help"),
+            actionButton("btn_logout", "Log out", class = "btn-ghost",
+              style = "font-size:12px;padding:6px 14px;")))),
       div(class = "page-wrap",
         uiOutput("athlete_nav_pills"),
         uiOutput("athlete_tab_content")
