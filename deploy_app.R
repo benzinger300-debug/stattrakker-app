@@ -438,8 +438,8 @@ server <- function(input, output, session) {
   # PayPal subscription links — paste the real links from your PayPal account
   # (PayPal > Pay & Get Paid > Subscriptions > create plan > copy share link).
   # They look like: https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-XXXXXXXX
-  pp_individual <- "https://www.paypal.com/PASTE_INDIVIDUAL_LINK"
-  pp_coach      <- "https://www.paypal.com/PASTE_COACH_LINK"
+  pp_individual <- "https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-5L9725178V660432VNJAAP7A"
+  pp_coach      <- "https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-0NN66399YA646750ANJAAXKI"
   pp_school     <- "mailto:benzinger300@gmail.com?subject=Stattrakker%20for%20our%20school"
 
   payment_screen <- function() {
