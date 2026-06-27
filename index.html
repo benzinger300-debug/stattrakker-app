@@ -9,7 +9,7 @@
 
 <!-- ── SEO: primary ─────────────────────────────────────────────── -->
 <title>Stattrakker — The Athlete Passport | Track Your Stats &amp; Get Scouted</title>
-<meta name="description" content="Stattrakker is the athlete passport: log your games, build a verified stats profile, track wellness streaks, and get discovered by coaches and scouts. Free during beta — for every sport, every level." />
+<meta name="description" content="Stattrakker is the athlete passport: log your games, build a verified stats profile, track wellness streaks, and get discovered by coaches and scouts. For every sport, every level." />
 <meta name="keywords" content="Stattrakker, athlete passport, sports stats tracker, get scouted, athlete profile, coach scouting app, recruiting, basketball stats, football stats" />
 <link rel="canonical" href="https://stattrakker.com/" />
 <meta name="robots" content="index, follow" />
@@ -19,7 +19,7 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Stattrakker" />
 <meta property="og:title" content="Stattrakker — The Athlete Passport" />
-<meta property="og:description" content="Log your games, build a verified stats profile, and get discovered by coaches. Free during beta." />
+<meta property="og:description" content="Log your games, build a verified stats profile, and get discovered by coaches." />
 <meta property="og:url" content="https://stattrakker.com/" />
 <meta property="og:image" content="https://stattrakker.com/demo-poster.jpg" />
 <meta property="og:video" content="https://stattrakker.com/demo-720.mp4" />
@@ -101,6 +101,8 @@
   .grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.1rem; }
   .card{ background:linear-gradient(180deg,var(--surface-2),var(--surface)); border:1px solid var(--border); border-radius:16px; padding:1.6rem; transition:transform .16s ease,border-color .16s ease; }
   .card:hover{ transform:translateY(-3px); border-color:var(--border-2); }
+  .price-card{ transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease; }
+  .price-card:hover{ transform:translateY(-3px); border-color:var(--accent); box-shadow:0 16px 44px rgba(200,240,75,.20); }
   .card .ico{ font-size:1.8rem; margin-bottom:.7rem; }
   .card h3{ font-size:1.15rem; font-weight:800; margin-bottom:.4rem; }
   .card p{ color:var(--text-2); font-size:.95rem; line-height:1.55; }
@@ -135,7 +137,7 @@
   <div class="wrap nav">
     <div class="brand">Stattrakker</div>
     <div class="nav-cta">
-      <a class="btn btn-primary" href="/own-it/">Launch App</a>
+      <a class="btn btn-primary" href="https://app.stattrakker.com">Launch App</a>
     </div>
   </div>
 </header>
@@ -147,7 +149,7 @@
     <h1>Every athlete has stats.<br>Now they have a <span class="hl">passport.</span></h1>
     <p class="sub">Log your games, build a verified stats profile, keep your wellness streak, and get discovered by coaches and scouts — for every sport, every level.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary btn-lg" href="/own-it/">Create your passport — free</a>
+      <a class="btn btn-primary btn-lg" href="https://app.stattrakker.com">Create your passport</a>
       <a class="btn btn-ghost btn-lg" href="#demo">Watch the demo</a>
     </div>
 
@@ -186,7 +188,7 @@
           <li>Build a passport that's yours — it follows you, not a team</li>
           <li>Log games and check-ins in seconds</li>
           <li>Show coaches where you play and how to find you</li>
-          <li>Free during beta — no coach required to start</li>
+          <li>No coach required — start on your own</li>
         </ul>
       </div>
       <div class="panel">
@@ -202,12 +204,62 @@
     </div>
   </section>
 
+  <!-- PRICING -->
+  <section class="block wrap" id="pricing">
+    <div class="section-head">
+      <h2>Simple pricing</h2>
+      <p>Simple, transparent pricing — pick the plan that fits.</p>
+    </div>
+    <div class="grid">
+
+      <div class="card price-card" style="display:flex;flex-direction:column;">
+        <div style="font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);">Individual</div>
+        <div style="font-size:2.6rem;font-weight:900;letter-spacing:-0.03em;margin:.5rem 0 .1rem;">$10<span style="font-size:1rem;color:var(--text-3);font-weight:600;"> / mo</span></div>
+        <div style="color:var(--text-3);font-size:.9rem;margin-bottom:1.2rem;">For the athlete</div>
+        <ul style="list-style:none;color:var(--text-2);font-size:.93rem;line-height:2;margin-bottom:1.4rem;flex:1;">
+          <li>Your own athlete passport</li>
+          <li>Log games &amp; sport-specific stats</li>
+          <li>Wellness check-in streaks</li>
+          <li>Get discovered by coaches</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://app.stattrakker.com" style="display:block;text-align:center;">Get started</a>
+      </div>
+
+      <div class="card price-card" style="display:flex;flex-direction:column;">
+        <div style="font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);">Coach</div>
+        <div style="font-size:2.6rem;font-weight:900;letter-spacing:-0.03em;margin:.5rem 0 .1rem;">$10<span style="font-size:1rem;color:var(--text-3);font-weight:600;"> / mo</span></div>
+        <div style="color:var(--accent);font-size:.92rem;font-weight:700;margin-bottom:1.2rem;">+ $10 per athlete you add</div>
+        <ul style="list-style:none;color:var(--text-2);font-size:.93rem;line-height:2;margin-bottom:1.4rem;flex:1;">
+          <li>Browse &amp; scout the athlete pool</li>
+          <li>Build your team roster</li>
+          <li>Lineups &amp; season schedule</li>
+          <li>Reports &amp; leaderboards</li>
+        </ul>
+        <a class="btn btn-primary" href="https://app.stattrakker.com" style="display:block;text-align:center;">Start your team</a>
+      </div>
+
+      <div class="card price-card" style="display:flex;flex-direction:column;">
+        <div style="font-size:.78rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);">School</div>
+        <div style="font-size:2.6rem;font-weight:900;letter-spacing:-0.03em;margin:.5rem 0 .1rem;">Let's talk</div>
+        <div style="color:var(--text-3);font-size:.9rem;margin-bottom:1.2rem;">For schools &amp; leagues</div>
+        <ul style="list-style:none;color:var(--text-2);font-size:.93rem;line-height:2;margin-bottom:1.4rem;flex:1;">
+          <li>Multiple coaches &amp; teams</li>
+          <li>Bulk athlete onboarding</li>
+          <li>League-wide scouting</li>
+          <li>Negotiated pricing for your school</li>
+        </ul>
+        <a class="btn btn-ghost" href="https://app.stattrakker.com" style="display:block;text-align:center;">Contact us</a>
+      </div>
+
+    </div>
+  </section>
+
   <!-- CTA BAND -->
   <section class="block wrap">
     <div class="band">
       <h2>Start your passport today</h2>
-      <p>Free during beta. Name and a PIN is all it takes — your stats, your profile, your shot at getting seen.</p>
-      <a class="btn btn-primary btn-lg" href="/own-it/">Get started free</a>
+      <p>Name and a PIN is all it takes — your stats, your profile, your shot at getting seen.</p>
+      <a class="btn btn-primary btn-lg" href="https://app.stattrakker.com">Get started</a>
     </div>
   </section>
 </main>

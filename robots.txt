@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /own-it/
+Disallow: /own-it
 
 Sitemap: https://stattrakker.com/sitemap.xml

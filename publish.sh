@@ -62,9 +62,20 @@ server {
 }
 NGINX
 
-echo "==> Enabling only the new site"
-rm -f /etc/nginx/sites-enabled/*
+# Private mode: if /etc/nginx/.htpasswd exists, password-protect the whole site
+# (landing + app). Delete that file and re-run to go public again.
+if [ -f /etc/nginx/.htpasswd ]; then
+  sed -i '/server_name www.stattrakker.com stattrakker.com;/a\    auth_basic "Stattrakker — Private"; auth_basic_user_file /etc/nginx/.htpasswd;' /etc/nginx/sites-available/stattrakker
+  echo "==> PRIVATE MODE ON (login required)"
+else
+  echo "==> Public mode (no login required)"
+fi
+
+echo "==> Enabling the site (preserving app.stattrakker.com)"
+rm -f /etc/nginx/sites-enabled/default /etc/nginx/sites-enabled/stattrakker
 ln -sf /etc/nginx/sites-available/stattrakker /etc/nginx/sites-enabled/stattrakker
+# keep the app subdomain enabled if it's set up
+[ -f /etc/nginx/sites-available/app-stattrakker ] && ln -sf /etc/nginx/sites-available/app-stattrakker /etc/nginx/sites-enabled/app-stattrakker
 
 echo "==> Validating nginx config"
 if nginx -t 2>/tmp/ngtest; then
