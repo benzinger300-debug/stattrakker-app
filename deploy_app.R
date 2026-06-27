@@ -862,6 +862,8 @@ server <- function(input, output, session) {
       list(id = "reports",  icon = "📊", label = "Reports"),
       list(id = "plan",     icon = "💳", label = "Plan")
     )
+    if (isTRUE(cur_coach()$owner))
+      pills <- c(pills, list(list(id = "members", icon = "🛠️", label = "Members")))
     div(class = "pill-nav",
       lapply(pills, function(p) {
         tags$button(
@@ -883,7 +885,8 @@ server <- function(input, output, session) {
       "lineups"  = uiOutput("coach_lineups_ui"),
       "schedule" = uiOutput("coach_schedule_ui"),
       "reports"  = uiOutput("coach_reports_ui"),
-      "plan"     = uiOutput("coach_plan_ui")
+      "plan"     = uiOutput("coach_plan_ui"),
+      "members"  = uiOutput("owner_members_ui")
     )
   })
 
@@ -1851,6 +1854,67 @@ server <- function(input, output, session) {
         div(style = "font-size:11px;color:#5a6478;margin-top:.65rem;",
           "Opens PayPal, where you can manage or cancel your Stattrakker subscription."))
     )
+  })
+
+  # ── OWNER: MEMBERS / PIN RESET ────────────────────────────────────────────
+  # Only an account flagged owner=TRUE (set once on the server) ever sees this.
+  output$owner_members_ui <- renderUI({
+    co <- cur_coach()
+    if (!isTRUE(co$owner))
+      return(div(style="padding-top:1.5rem;color:#9ba8c0;", "Not authorized."))
+    team_ver()  # re-render after a reset
+    ids <- ls(athlete_store)
+    rows <- lapply(ids, function(id) {
+      a <- get_athlete(id)
+      list(id = id, name = a$name %||% "—", role = a$role %||% "athlete",
+           team = a$team_name %||% "")
+    })
+    rows <- rows[order(vapply(rows, function(r) tolower(r$name), ""))]
+    choices <- setNames(
+      vapply(rows, function(r) r$id, ""),
+      vapply(rows, function(r) sprintf("%s — %s%s", r$name, r$role,
+        if (nzchar(r$team)) paste0(" (", r$team, ")") else ""), "")
+    )
+    div(style = "padding-top:1.5rem;",
+      div(class = "card", style = "padding:1.25rem;margin-bottom:1.25rem;",
+        div(style="font-size:16px;font-weight:800;color:#f0f2f5;margin-bottom:.35rem;",
+          "Members — PIN reset"),
+        div(style="font-size:12px;color:#9ba8c0;margin-bottom:1rem;",
+          "Owner only. Pick a person, reset their PIN to a new number, then give them the new PIN."),
+        selectInput("owner_pick", "Find a member", choices = choices),
+        actionButton("btn_owner_reset", "Reset this person's PIN", class = "btn-own",
+          style = "font-size:14px;padding:11px 20px;"),
+        uiOutput("owner_reset_msg")),
+      div(class = "card", style = "padding:1.25rem;",
+        div(style="font-size:13px;font-weight:800;color:#f0f2f5;margin-bottom:.75rem;",
+          paste0("All members (", length(rows), ")")),
+        div(style="display:flex;flex-direction:column;gap:.4rem;",
+          lapply(rows, function(r)
+            div(style="display:flex;justify-content:space-between;font-size:13px;color:#c8d0e0;border-bottom:1px solid #1e2330;padding-bottom:.35rem;",
+              tags$span(r$name),
+              tags$span(style="color:#6b7a99;",
+                paste0(r$role, if (nzchar(r$team)) paste0(" · ", r$team) else ""))))))
+    )
+  })
+
+  observeEvent(input$btn_owner_reset, {
+    co <- cur_coach()
+    if (!isTRUE(co$owner)) return()
+    id <- input$owner_pick %||% ""
+    a  <- get_athlete(id)
+    if (is.null(a)) {
+      output$owner_reset_msg <- renderUI(div(class="alert-danger",style="margin-top:.75rem;",
+        "Pick a member first."))
+      return()
+    }
+    newpin <- sprintf("%04d", sample(0:9999, 1))
+    a$pin <- newpin
+    save_athlete(a)
+    team_ver(team_ver() + 1)
+    output$owner_reset_msg <- renderUI(
+      div(class="alert-success", style="margin-top:.75rem;",
+        paste0("New PIN for ", a$name %||% "this member", ":  ", newpin,
+               "   — give them this PIN.")))
   })
 
   # ── ATHLETE SCREEN ────────────────────────────────────────────────────────
