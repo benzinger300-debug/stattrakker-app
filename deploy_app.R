@@ -390,7 +390,7 @@ ui <- tagList(
 # ── SERVER ────────────────────────────────────────────────────────────────────
 server <- function(input, output, session) {
 
-  page             <- reactiveVal("login")
+  page             <- reactiveVal("pay")
   athlete_id       <- reactiveVal(NULL)
   games_rv         <- reactiveVal(NULL)
   journals_rv      <- reactiveVal(list())
@@ -411,11 +411,81 @@ server <- function(input, output, session) {
   output$main_ui <- renderUI({
     p <- page()
     coach_reset_rv()   # reactive dependency so reset forces redraw
+    if (p == "pay")         return(payment_screen())
     if (p == "athlete")     return(athlete_screen())
     if (p == "coach")       return(coach_screen())
     if (p == "coach_login") return(coach_login_screen())
     login_screen()
   })
+
+  # ── PAYMENT / PLANS SCREEN (entry point) ──────────────────────────────────
+  # PayPal subscription links — paste the real links from your PayPal account
+  # (PayPal > Pay & Get Paid > Subscriptions > create plan > copy share link).
+  # They look like: https://www.paypal.com/webapps/billing/plans/subscribe?plan_id=P-XXXXXXXX
+  pp_individual <- "https://www.paypal.com/PASTE_INDIVIDUAL_LINK"
+  pp_coach      <- "https://www.paypal.com/PASTE_COACH_LINK"
+  pp_school     <- "mailto:benzinger300@gmail.com?subject=Stattrakker%20for%20our%20school"
+
+  payment_screen <- function() {
+    plan_card <- function(badge, title, price, sub, blurb, features, btn_label, btn_href, accent = "#C8F04B", highlight = FALSE) {
+      div(class = "card",
+        style = paste0("padding:1.5rem;display:flex;flex-direction:column;",
+          if (highlight) paste0("border:1.5px solid ", accent, "55;box-shadow:0 16px 44px rgba(200,240,75,.14);") else ""),
+        if (!is.null(badge))
+          div(style = paste0("align-self:flex-start;background:", accent, "22;border:1px solid ", accent, "55;color:", accent,
+            ";border-radius:9999px;padding:4px 12px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.85rem;"),
+            badge),
+        div(style = "font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;margin-bottom:.35rem;", title),
+        div(style = "display:flex;align-items:baseline;gap:.35rem;margin-bottom:.15rem;",
+          div(style = paste0("font-size:2.4rem;font-weight:900;color:", accent, ";line-height:1;"), price),
+          if (nzchar(sub)) div(style = "font-size:13px;color:#6b7a99;", sub)),
+        div(style = "font-size:13px;color:#9ba8c0;margin:.5rem 0 1rem;min-height:2.4em;", blurb),
+        div(style = "display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.4rem;flex:1;",
+          lapply(features, function(f)
+            div(style = "display:flex;align-items:flex-start;gap:.55rem;font-size:13px;color:#c8d0e0;line-height:1.45;",
+              tags$span(style = paste0("color:", accent, ";font-weight:900;"), "✓"), f))),
+        tags$a(href = btn_href, target = "_blank", rel = "noopener",
+          style = paste0("display:block;text-align:center;text-decoration:none;border-radius:10px;",
+            "padding:13px;font-size:14px;font-weight:800;",
+            if (highlight) "background:#ffc439;color:#0a0c10;"
+            else "background:transparent;color:#f0f2f5;border:1.5px solid #2a3142;"),
+          btn_label)
+      )
+    }
+
+    div(class = "login-wrap", style = "align-items:flex-start;padding-top:3rem;padding-bottom:3rem;",
+      div(style = "width:100%;max-width:1040px;margin:0 auto;",
+        div(style = "text-align:center;margin-bottom:.5rem;",
+          div(class = "login-logo", "Stattrakker"),
+          div(class = "login-sub",  "The Athlete Passport")),
+        div(style = "text-align:center;font-size:15px;color:#9ba8c0;margin:.75rem auto 2.25rem;max-width:560px;",
+          "Pick your plan to get started. Pay securely with PayPal, then create your account."),
+
+        div(style = "display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.25rem;align-items:stretch;",
+          plan_card(NULL, "Individual", "$10", "/mo",
+            "For athletes who own their own passport.",
+            list("Your Athlete Passport score", "Log games, stats & check-ins", "Build streaks and track progress", "Be discoverable by coaches & scouts"),
+            "Subscribe with PayPal", pp_individual, accent = "#C8F04B"),
+          plan_card("Most flexible", "Coach / Team", "$10", "+ $10 per athlete",
+            "For coaches running a team or league.",
+            list("Everything in Individual", "Unlimited roster + PIN logins", "Lineup builder & season schedule", "Team dashboard & attention alerts"),
+            "Subscribe with PayPal", pp_coach, accent = "#ffc439", highlight = TRUE),
+          plan_card(NULL, "School / League", "Custom", "",
+            "For schools & organizations. Let's talk.",
+            list("Everything in Coach / Team", "Multiple coaches & teams", "Volume pricing", "Priority onboarding & support"),
+            "Contact us", pp_school, accent = "#60a5fa")
+        ),
+
+        div(style = "text-align:center;margin-top:2rem;",
+          actionLink("go_login_from_pay", "Already subscribed or have an account?  Continue →",
+            style = "color:#9ba8c0;font-size:14px;font-weight:700;text-decoration:none;")),
+        div(style = "text-align:center;margin-top:.6rem;font-size:12px;color:#4a5268;",
+          "Cancel anytime · Secure checkout through PayPal")
+      )
+    )
+  }
+
+  observeEvent(input$go_login_from_pay, { page("login") })
 
   # ── ATHLETE LOGIN / SIGNUP ────────────────────────────────────────────────
   login_screen <- function() {
@@ -495,7 +565,7 @@ server <- function(input, output, session) {
           actionButton("btn_signup", "Create My Profile", class = "btn-own",
             style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
           div(style="font-size:11px;color:#4a5268;text-align:center;",
-            "Free during beta. Your passport is yours — no coach required.")
+            "Your passport is yours — no coach required.")
         ),
 
         tags$hr(style="border:none;border-top:1px solid #1e2330;margin:1.25rem 0;"),
@@ -660,7 +730,7 @@ server <- function(input, output, session) {
           actionButton("btn_coach_signup", "Create Coach Account", class = "btn-own",
             style = "width:100%;font-size:15px;padding:14px;margin-bottom:1rem;"),
           div(style="font-size:11px;color:#4a5268;text-align:center;",
-            "Free during beta. Once you're in, add your athletes — each gets their own passport.")
+            "Once you're in, add your athletes — each gets their own passport.")
         ),
 
         tags$hr(style="border:none;border-top:1px solid #1e2330;margin:1.25rem 0;"),
@@ -1651,11 +1721,11 @@ server <- function(input, output, session) {
 
   # ── COACH PLAN TAB ───────────────────────────────────────────────────────
   output$coach_plan_ui <- renderUI({
-    athletes  <- get_all_athletes()
+    athletes  <- get_team_athletes(cur_coach())
     n         <- length(athletes)
-    team_price   <- 2.99   # per athlete/month
-    indiv_price  <- 4.99   # per individual/month
-    monthly   <- n * team_price
+    base_price  <- 10   # coach base per month
+    per_price   <- 10   # per athlete per month
+    monthly   <- base_price + n * per_price
 
     div(style = "padding-top:1.5rem;",
 
@@ -1664,18 +1734,18 @@ server <- function(input, output, session) {
         div(style = "display:flex;align-items:flex-start;justify-content:space-between;",
           div(
             div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:#9ba8c0;margin-bottom:.35rem;", "Current Plan"),
-            div(style = "font-size:2rem;font-weight:900;color:#f59e0b;line-height:1;", "Unlimited"),
-            div(style = "margin-top:.4rem;font-size:13px;color:#9ba8c0;", "Beta access · No billing until launch")
+            div(style = "font-size:2rem;font-weight:900;color:#f59e0b;line-height:1;", "Coach Plan"),
+            div(style = "margin-top:.4rem;font-size:13px;color:#9ba8c0;", "Billed monthly · cancel anytime")
           ),
           div(style = "background:#f59e0b22;border:1px solid #f59e0b55;border-radius:9999px;padding:6px 16px;font-size:12px;font-weight:700;color:#f59e0b;white-space:nowrap;",
-            "BETA")
+            "ACTIVE")
         ),
         tags$hr(style = "border:none;border-top:1px solid #ffffff10;margin:1.25rem 0;"),
         div(style = "display:flex;gap:2.5rem;",
           div(
             div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Athletes on Roster"),
             div(style = "font-size:1.75rem;font-weight:800;color:#f0f2f5;margin-top:.15rem;", n),
-            div(style = "font-size:11px;color:#6b7a99;margin-top:.1rem;", "Unlimited seats right now")
+            div(style = "font-size:11px;color:#6b7a99;margin-top:.1rem;", "on your team")
           ),
           div(style = "width:1px;background:#ffffff10;"),
           div(
@@ -1690,33 +1760,33 @@ server <- function(input, output, session) {
       div(class = "card", style = "padding:1.25rem;margin-bottom:1.5rem;",
         div(style = "font-size:15px;font-weight:800;color:#f0f2f5;margin-bottom:.25rem;", "When Billing Launches"),
         div(style = "font-size:12px;color:#6b7a99;margin-bottom:1.25rem;",
-          "Here's what your plan would cost based on today's roster — no charge until we flip the switch."),
+          "Your monthly cost, based on your current team."),
 
         div(style = "display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;margin-bottom:1.25rem;",
           div(style = "background:#0f1726;border:1px solid #1e2d4a;border-radius:10px;padding:1rem;",
-            div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Price Per Athlete"),
-            div(style = "font-size:1.6rem;font-weight:800;color:#60a5fa;margin-top:.25rem;",
-              paste0("$", format(team_price, nsmall = 2))),
+            div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Coach Base"),
+            div(style = "font-size:1.6rem;font-weight:800;color:#60a5fa;margin-top:.25rem;", "$10"),
             div(style = "font-size:11px;color:#6b7a99;", "per month")
           ),
           div(style = "background:#0f1726;border:1px solid #1e2d4a;border-radius:10px;padding:1rem;",
-            div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Your Roster"),
-            div(style = "font-size:1.6rem;font-weight:800;color:#60a5fa;margin-top:.25rem;", n),
-            div(style = "font-size:11px;color:#6b7a99;", "athletes")
+            div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Per Athlete"),
+            div(style = "font-size:1.6rem;font-weight:800;color:#60a5fa;margin-top:.25rem;",
+              paste0("$10 × ", n)),
+            div(style = "font-size:11px;color:#6b7a99;", "athletes on your team")
           ),
           div(style = "background:#0f1726;border:1px solid #f59e0b33;border-radius:10px;padding:1rem;",
             div(style = "font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#6b7a99;", "Est. Monthly"),
             div(style = "font-size:1.6rem;font-weight:800;color:#f59e0b;margin-top:.25rem;",
-              if (n == 0) "$0" else paste0("$", format(monthly, big.mark=",", nsmall=2))),
-            div(style = "font-size:11px;color:#6b7a99;", "projected")
+              paste0("$", format(monthly, big.mark=",", nsmall=0))),
+            div(style = "font-size:11px;color:#6b7a99;", "$10 base + $10/athlete")
           )
         ),
 
         div(style = "background:#f59e0b0d;border:1px solid #f59e0b22;border-radius:8px;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;",
           tags$span(style="font-size:16px;","💡"),
           div(style = "font-size:12px;color:#9ba8c0;line-height:1.5;",
-            "Pricing is not final and you won't be charged during beta. ",
-            tags$b(style="color:#f0f2f5;","Add as many athletes as you need right now.")))
+            "Your monthly total updates automatically as you add or remove athletes. ",
+            tags$b(style="color:#f0f2f5;","$10 base + $10 per athlete.")))
       ),
 
       # ── What's included ──
